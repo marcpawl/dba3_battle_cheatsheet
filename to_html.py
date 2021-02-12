@@ -139,6 +139,7 @@ print("""
 <head>
 <style>
 .base {
+  margin-top: 20px; 
   page-break-inside: avoid;
 }
 
@@ -147,6 +148,22 @@ print("""
   margin-bottom: 0px; 
   padding-top: 0px; 
   padding-bottom: 0px; 
+}
+
+ul { padding-left: 1.2em; }
+
+.li {
+  margin-top: 0px; 
+  margin-bottom: 0px; 
+  margin-left: 0px; 
+  border-left: 0px; 
+  padding-top: 0px; 
+  padding-bottom: 0px; 
+  padding-left: 0px; 
+}
+
+.col {
+  vertical-align: top;
 }
 
 @media print {
@@ -186,6 +203,9 @@ function rules(node, key, title, tip) {
   for (i in list ) {
     var li = document.createElement("LI")
     ul.appendChild(li)
+    var li_class = document.createAttribute("class");
+    li_class.value = "li";
+    li.setAttributeNode(li_class)
     li.appendChild(document.createTextNode(list[i]));
   }
 }
@@ -230,83 +250,111 @@ function victory_notes(node, tip) {
   rules(node, 'victory_notes', 'Victory', tip)
 }
 
-function add_tool_tips(elem, base_name) {
-  if ( ! (base_name in tool_tips) ) {
-    return;
-  }
-  var tip = tool_tips[base_name];
-  var base_node = document.createElement("P");
-  elem.appendChild(base_node);
-  var base_node_class = document.createAttribute("class");
-  base_node_class.value = "base";
-  base_node.setAttributeNode(base_node_class)
-
-  var base_name_node = document.createTextNode(base_name);
-  base_node.appendChild(base_name_node);
-  base_node.appendChild(document.createTextNode(" "));
-  var name_node = document.createTextNode(tip['name']);
-  base_node.appendChild(name_node);
-  base_node.appendChild(document.createTextNode(" ["));
-  if (('mounted' in tip) && (tip['mounted'])) {
-    base_node.appendChild(document.createTextNode(" mounted"));
-  }
-  if (('solid' in tip) &&  (tip['solid'])) {
-    base_node.appendChild(document.createTextNode(" solid"));
-  }
-  if (('fast' in tip) && (tip['fast'])) {
-    base_node.appendChild(document.createTextNode(" fast"));
-  }
-  base_node.appendChild(document.createTextNode(" ]"));
-  base_node.appendChild(document.createElement("BR"))
-
+function speed(node, tip) {
   var speed = tip['speed'];
   var gg = speed['GG'];
   var gg_str = gg.toString(10);
   var bg = speed['BG'];
   var bg_str = bg.toString(10);
-  var speed_text = "speed " + gg_str + "/" + bg_str;
+  var speed_text = "speed  GG: " + gg_str + "BW BG/RG: " + bg_str + "BW";
   var speed_node = document.createTextNode(speed_text);
-  base_node.appendChild(speed_node);
+  node.appendChild(speed_node);
+}
 
-  base_node.appendChild(document.createTextNode(" "));
-
+function combat(node, tip) {
   var combat = tip['combat'];
-  var combat_text = "combat ";
+  var combat_text = "combat foot: ";
   if ( 'foot' in combat ) {
     combat_text = combat_text + combat['foot'].toString(10);
   }
-  combat_text = combat_text + "/"
+  combat_text = combat_text + " mounted: "
   if ( 'mounted' in combat ) {
     combat_text = combat_text + combat['mounted'].toString(10);
   }
-  combat_text = combat_text + "/"
+  combat_text = combat_text + " shot at: "
   var shot_at = ( 'shot_at' in combat ) ? combat['shot_at'] : combat['foot']
   combat_text = combat_text + shot_at.toString(10);
   var combat_node = document.createTextNode(combat_text);
-  base_node.appendChild(combat_node);
-  base_node.appendChild(document.createElement("BR"))
+  node.appendChild(combat_node);
+}
+
+function add_tool_tips(elem, base_name) {
+  if ( ! (base_name in tool_tips) ) {
+    return;
+  }
+  var tip = tool_tips[base_name];
+  var table_node = document.createElement("table");
+  elem.appendChild(table_node);
+  var base_node_class = document.createAttribute("class");
+  base_node_class.value = "base";
+  table_node.setAttributeNode(base_node_class);
+
+  var tbody = document.createElement("tbody");
+  table_node.appendChild(tbody);
+
+  var title_tr = document.createElement("tr")
+  tbody.appendChild(title_tr)
+  var title_base_name_td = document.createElement("td")
+  var title_base_attributes_td = document.createElement("td")
+  title_tr.appendChild(title_base_name_td)
+  title_tr.appendChild(title_base_attributes_td)
+  
+  var base_name_node = document.createTextNode(base_name);
+  title_base_name_td.appendChild(base_name_node);
+  title_base_name_td.appendChild(document.createTextNode(" "));
+  var name_node = document.createTextNode(tip['name']);
+  title_base_name_td.appendChild(name_node);
+
+  title_base_attributes_td.appendChild(document.createTextNode(" ["));
+  if (('mounted' in tip) && (tip['mounted'])) {
+    title_base_attributes_td.appendChild(document.createTextNode(" mounted"));
+  }
+  if (('solid' in tip) &&  (tip['solid'])) {
+   title_base_attributes_td.appendChild(document.createTextNode(" solid"));
+  }
+  if (('fast' in tip) && (tip['fast'])) {
+    title_base_attributes_td.appendChild(document.createTextNode(" fast"));
+  }
+  title_base_attributes_td.appendChild(document.createTextNode(" ]"));
+
+  var tr = document.createElement("tr");
+  tbody.appendChild(tr);
+  var combat_td = document.createElement("td");
+  var movement_td = document.createElement("td");
+  tr.appendChild(combat_td);
+  tr.appendChild(movement_td);
+  var combat_td_class = document.createAttribute("class");
+  combat_td_class.value = "col";
+  combat_td.setAttributeNode(combat_td_class);
+  var movement_td_class = document.createAttribute("class");
+  movement_td_class.value = "col";
+  movement_td.setAttributeNode(movement_td_class);
+
+  speed(movement_td, tip)
+  combat(combat_td, tip)
+
 
   // wins
-  can_quick_kill(base_node, tip)
-  makes_flee(base_node, tip)
-  cannot_destroy(base_node, tip)
+  can_quick_kill(combat_td, tip)
+  makes_flee(combat_td, tip)
+  cannot_destroy(combat_td, tip)
 
   // looses
-  quick_killed_by(base_node, tip)
-  only_killed_by(base_node, tip)
-  flees_from(base_node, tip)
+  quick_killed_by(combat_td, tip)
+  only_killed_by(combat_td, tip)
+  flees_from(combat_td, tip)
 
-  combat_notes(base_node, tip)
-  movement_notes(base_node, tip)
-  victory_notes(base_node, tip)
-  deployment_notes(base_node, tip)
+  combat_notes(combat_td, tip)
+
+  movement_notes(movement_td, tip)
+  deployment_notes(movement_td, tip)
+  victory_notes(movement_td, tip)
 }
 
 function red_selected() {
   console.log("red_selected");
   var army_key = document.getElementById('red').value
   var army_elem = document.getElementById('red_army');
-  army_elem.innerHTML = "RED ARMY " + army_key;
   var base_names = bases[army_key]
   for (i in base_names) {
     console.log(i)
