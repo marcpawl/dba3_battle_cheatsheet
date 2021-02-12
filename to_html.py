@@ -14,9 +14,9 @@ base_order= [
   # Knights
   '3Kn', '4Kn', '6Kn', 'HCh',
   # Cavalry
-  'Cv', '3Cv', '6Cv',  'LCh',
+  'Cv', '6Cv',  'LCh',
   # Light Horse
-  '2LH', 'LH', 'LCm', '2Cm',
+  'LH', 'LCm', 
   # Scythed Chariots
   'SCh',
   # Camelry
@@ -33,10 +33,9 @@ base_order= [
   '4Bw','3Bw', '8Bw',
   '4Cb', '3Cb', '8Cb',
   '4Lb', '3Lb', '8Lb',
-  '3Bw_Mtd', '3Bw-Mtd', '3Mtd-Bw', '3Bw:Mtd',
-  '4Bw-Mtd', 'Mtd-4Bw', '4Bw_Mtd',
-  '4Cb_Mtd',
-  '4Lb_Mtd', '4Lb-Mtd',
+  'Mtd-4Bw', 'Mtd-3Bw',
+  'Mtd-4Lb', 
+  'Mtd-4Cb', 
   # Psiloi
   'Ps',
   # Warbands
@@ -502,6 +501,9 @@ def generate_army_selector(color):
   sys.stdout.write('<option value="All">All</option>\n')
   for army_name in army_names() :
     k=key_army_name_str(army_name)
+    if army_name.endswith('(Plain)'):
+      army_name = army_name[:-7]
+      army_name = army_name.strip()
     sys.stdout.write('<option value="%s">%s</option>\n' % (k, army_name))
   sys.stdout.write('</select>\n')
   sys.stdout.write("</td>")

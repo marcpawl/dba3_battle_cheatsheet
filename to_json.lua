@@ -5,6 +5,7 @@ function dofile (filename)
   return f()
 
 end
+dofile("dba3_tts/scripts/utilities_lua.ttslua")
 dofile("dba3_tts/scripts/data/data_cheat_sheet.ttslua")
 armies={}
 dofile("dba3_tts/scripts/data/data_armies_book_I.ttslua")
