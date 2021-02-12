@@ -145,6 +145,14 @@ print("""
   width: 100%;
 }
 
+.red {
+  color: red;
+}
+
+.blue {
+  color: blue;
+}
+
 .lt {
   margin-top: 0px; 
   margin-bottom: 0px; 
@@ -420,22 +428,28 @@ print("""
 <form>
 """)
 
-print('<select name="red" id="red" onchange="red_selected()">')
-print('<option value="None">None</option>')
-print('<option value="All">All</option>')
-for army_name in army_names() :
-  k=key_army_name_str(army_name)
-  print('<option value="%s">%s</option>' % (k, army_name))
-print('</select>')
+def generate_army_selector(color):
+  sys.stdout.write('<tr class="%s">' % (color))
+  sys.stdout.write("<td>")
+  sys.stdout.write('<label for="%s">%s</label>' % (color, color))
+  sys.stdout.write("</td>")
+  sys.stdout.write("<td>")
+  sys.stdout.write('<select name="%s" id="%s" onchange="%s_selected()">\n' % (color,color,color))
+  sys.stdout.write('<option value="None">None</option>\n')
+  sys.stdout.write('<option value="All">All</option>\n')
+  for army_name in army_names() :
+    k=key_army_name_str(army_name)
+    sys.stdout.write('<option value="%s">%s</option>\n' % (k, army_name))
+  sys.stdout.write('</select>\n')
+  sys.stdout.write("</td>")
+  sys.stdout.write("</tr>")
 
-
-print('<select name="blue" id="blue" onchange="blue_selected()">')
-print('<option value="None">None</option>')
-print('<option value="All">All</option>')
-for army_name in army_names() :
-  k=key_army_name_str(army_name)
-  print('<option value="%s">%s</option>' % (k, army_name))
-print('</select>')
+sys.stdout.write("<table>\n")
+sys.stdout.write("<tbody>\n")
+generate_army_selector('red')
+generate_army_selector('blue')
+sys.stdout.write("</tbody>\n")
+sys.stdout.write("</table>\n")
 
 print("""
 </form>
