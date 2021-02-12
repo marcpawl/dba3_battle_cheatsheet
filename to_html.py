@@ -112,8 +112,8 @@ def book_from_army_name(army_name):
   k=key_army_name(army_name)
   return "Book " + k[0]
   
-def army_for_bases(army_name) :
-  """Return the names of the bases that are in the army, e.g aux, ps."""
+def bases_for_army(army_name) :
+  """Write out the javascript for the names of the bases that are in the army, e.g aux, ps."""
   book = book_from_army_name(army_name)
   army = data['armies'][book][army_name]
   bases=[]
@@ -132,7 +132,7 @@ def army_bases() :
   for army_name in army_names() :
     k=key_army_name_str(army_name)
     sys.stdout.write("bases['%s'] = " % (k))
-    army_for_bases(army_name)
+    bases_for_army(army_name)
 
 print("""
 <html>
@@ -141,6 +141,8 @@ print("""
 .base {
   margin-top: 20px; 
   page-break-inside: avoid;
+  border-style: double;
+  width: 100%;
 }
 
 .lt {
@@ -351,16 +353,64 @@ function add_tool_tips(elem, base_name) {
   victory_notes(movement_td, tip)
 }
 
-function red_selected() {
-  console.log("red_selected");
+function get_bases(army_key) {
+  if (army_key == "None") {
+    return [];
+  }
+  if (army_key == "All") {
+""");
+sys.stdout.write("return ")
+sys.stdout.write( json.dumps( base_order ) )
+sys.stdout.write(";")
+sys.stdout.write("""
+  }
+  return bases[army_key]
+}
+
+function get_red_bases()
+{
   var army_key = document.getElementById('red').value
+  return get_bases(army_key)
+}
+
+function get_blue_bases()
+{
+  var army_key = document.getElementById('blue').value
+  return get_bases(army_key)
+}
+
+function get_combined_bases() {
+  var red = get_red_bases();
+  var blue = get_blue_bases();
+  var bases = [];
+  bases = bases.concat(red);
+  bases = bases.concat(blue);
+  return bases.sort().filter(function(item, pos, ary) {
+      return !pos || item != ary[pos - 1];
+    });
+}
+
+function update_bases() {
   var army_elem = document.getElementById('red_army');
-  var base_names = bases[army_key]
+  army_elem.innerHTML = '';
+  while (army_elem.lastElementChild) {
+    army_elem.removeChild(army_elem.lastElementChild);
+  }
+  var base_names = get_combined_bases()
+  // TODO sort the bases by base order
   for (i in base_names) {
-    console.log(i)
     var base_name = base_names[i]
     add_tool_tips(army_elem, base_name)
   }
+}
+
+
+function red_selected() {
+  update_bases();
+}
+
+function blue_selected() {
+  update_bases();
 }
 """)
 print("""
@@ -371,7 +421,17 @@ print("""
 """)
 
 print('<select name="red" id="red" onchange="red_selected()">')
-print('<option value="">None</option>')
+print('<option value="None">None</option>')
+print('<option value="All">All</option>')
+for army_name in army_names() :
+  k=key_army_name_str(army_name)
+  print('<option value="%s">%s</option>' % (k, army_name))
+print('</select>')
+
+
+print('<select name="blue" id="blue" onchange="blue_selected()">')
+print('<option value="None">None</option>')
+print('<option value="All">All</option>')
 for army_name in army_names() :
   k=key_army_name_str(army_name)
   print('<option value="%s">%s</option>' % (k, army_name))
