@@ -138,6 +138,14 @@ print("""
 <html>
 <head>
 <style>
+.nobreak {
+  page-break-inside: avoid;
+}
+
+.base_abbreviation {
+  font-weight: bold;
+}
+
 .base {
   margin-top: 20px; 
   page-break-inside: avoid;
@@ -186,6 +194,10 @@ army_bases()
 
 sys.stdout.write("var tool_tips=")
 sys.stdout.write( json.dumps(data['tool_tips']) )
+sys.stdout.write(";\n")
+
+sys.stdout.write("var base_order=")
+sys.stdout.write( json.dumps( base_order ) )
 sys.stdout.write(";\n")
 
 print("""
@@ -309,8 +321,14 @@ function add_tool_tips(elem, base_name) {
   title_tr.appendChild(title_base_name_td)
   title_tr.appendChild(title_base_attributes_td)
   
+  var base_name_span = document.createElement("span");
+  var base_name_span_class = document.createAttribute("class");
+  base_name_span_class.value = "base_abbreviation";
+  base_name_span.setAttributeNode(base_name_span_class);
+  title_base_name_td.appendChild(base_name_span);
   var base_name_node = document.createTextNode(base_name);
-  title_base_name_td.appendChild(base_name_node);
+  base_name_span.appendChild(base_name_node);
+
   title_base_name_td.appendChild(document.createTextNode(" "));
   var name_node = document.createTextNode(tip['name']);
   title_base_name_td.appendChild(name_node);
@@ -389,13 +407,13 @@ function get_blue_bases()
 
 function get_combined_bases() {
   var red = get_red_bases();
+  var bases = new Set(red)
   var blue = get_blue_bases();
-  var bases = [];
-  bases = bases.concat(red);
-  bases = bases.concat(blue);
-  return bases.sort().filter(function(item, pos, ary) {
-      return !pos || item != ary[pos - 1];
-    });
+  for (i in blue) {
+    var base_name = blue[i];
+    bases.add(base_name);
+  }
+  return bases;
 }
 
 function add_army_color(elem, color) {
@@ -409,6 +427,7 @@ function add_army_color(elem, color) {
   elem.appendChild(br);
 }
 
+
 function update_bases() {
   var army_elem = document.getElementById('red_army');
   army_elem.innerHTML = '';
@@ -418,7 +437,6 @@ function update_bases() {
   var red_bases = new Set(get_red_bases())
   var blue_bases = new Set(get_blue_bases())
   var base_names = get_combined_bases()
-  // TODO sort the bases by base order
 
 
   var table_node = document.createElement("table");
@@ -427,26 +445,32 @@ function update_bases() {
   table_node.appendChild(tbody);
 
 
-  for (i in base_names) {
-    var base_name = base_names[i]
-    var tr = document.createElement("tr")
-    tbody.appendChild(tr)
-    var armies_td = document.createElement("td")
-    var tips_td = document.createElement("td")
-    tr.appendChild(armies_td)
-    tr.appendChild(tips_td)
+  for (i in base_order) {
+    var base_name = base_order[i]
+    if (base_names.has(base_name)) {
+      var tr = document.createElement("tr")
+      var tr_class = document.createAttribute("class");
+      tr_class.value = "nobreak";
+      tr.setAttributeNode(tr_class)
+      tbody.appendChild(tr)
 
-    if (base_name in tool_tips)  {
-      add_tool_tips(tips_td, base_name);
-    } else {
-      tips_td.innerHTML = base_name;
-    }
-
-    if ( red_bases.has(base_name)) {
-      add_army_color(armies_td, "red");
-    }
-    if ( blue_bases.has(base_name)) {
-      add_army_color(armies_td, "blue");
+      var armies_td = document.createElement("td")
+      var tips_td = document.createElement("td")
+      tr.appendChild(armies_td)
+      tr.appendChild(tips_td)
+  
+      if (base_name in tool_tips)  {
+        add_tool_tips(tips_td, base_name);
+      } else {
+        tips_td.innerHTML = base_name;
+      }
+  
+      if ( red_bases.has(base_name)) {
+        add_army_color(armies_td, "red");
+      }
+      if ( blue_bases.has(base_name)) {
+        add_army_color(armies_td, "blue");
+      }
     }
   }
 }
