@@ -398,17 +398,56 @@ function get_combined_bases() {
     });
 }
 
+function add_army_color(elem, color) {
+  var span = document.createElement("span");
+  elem.appendChild(span);
+  span.innerHTML = color;
+  var span_class = document.createAttribute("class");
+  span_class.value = color;
+  span.setAttributeNode(span_class)
+  var br = document.createElement("br")
+  elem.appendChild(br);
+}
+
 function update_bases() {
   var army_elem = document.getElementById('red_army');
   army_elem.innerHTML = '';
   while (army_elem.lastElementChild) {
     army_elem.removeChild(army_elem.lastElementChild);
   }
+  var red_bases = new Set(get_red_bases())
+  var blue_bases = new Set(get_blue_bases())
   var base_names = get_combined_bases()
   // TODO sort the bases by base order
+
+
+  var table_node = document.createElement("table");
+  army_elem.appendChild(table_node);
+  var tbody = document.createElement("tbody");
+  table_node.appendChild(tbody);
+
+
   for (i in base_names) {
     var base_name = base_names[i]
-    add_tool_tips(army_elem, base_name)
+    var tr = document.createElement("tr")
+    tbody.appendChild(tr)
+    var armies_td = document.createElement("td")
+    var tips_td = document.createElement("td")
+    tr.appendChild(armies_td)
+    tr.appendChild(tips_td)
+
+    if (base_name in tool_tips)  {
+      add_tool_tips(tips_td, base_name);
+    } else {
+      tips_td.innerHTML = base_name;
+    }
+
+    if ( red_bases.has(base_name)) {
+      add_army_color(armies_td, "red");
+    }
+    if ( blue_bases.has(base_name)) {
+      add_army_color(armies_td, "blue");
+    }
   }
 }
 
