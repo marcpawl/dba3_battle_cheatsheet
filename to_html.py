@@ -47,7 +47,7 @@ base_order= [
   # War Wagons
   'WWg',
   # Ceneral
-  'Cp', 'CP', '3CP', 'Lit', 'CWg',
+  'CP', 'Lit', 'CWg',
   'Camp'
 ]
 
@@ -428,7 +428,7 @@ function add_army_color(elem, color) {
 
 
 function update_bases() {
-  var army_elem = document.getElementById('red_army');
+  var army_elem = document.getElementById('armies');
   army_elem.innerHTML = '';
   while (army_elem.lastElementChild) {
     army_elem.removeChild(army_elem.lastElementChild);
@@ -518,7 +518,13 @@ sys.stdout.write("</table>\n")
 
 print("""
 </form>
-<p id="red_army">
+<p id="armies">
+</p>
+
+<p>References:<br/>
+<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=2255983207">De Bellis Antiquitatis Version 3.0 Paperback – May 29 2019
+by Phil Barker (Author), Sue Laflin-Barker (Author)</a><br/>
+<a href="https://github.com/leberechtreinhold/dba3_tts">DBA 3.0 Table Top Simulator</a><br/>
 </p>
 </body>
 </html>
