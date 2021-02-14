@@ -1,7 +1,7 @@
 [submodule "dba3_tts"]
 	path = dba3_tts
 	url = https://github.com/marcpawl/dba3_tts.git
-	branch = cheat_sheet_tooltips
+	branch = 00023_tool_tips_squashed
 [submodule "json.lua"]
 	path = json.lua
 	url = https://github.com/rxi/json.lua.git

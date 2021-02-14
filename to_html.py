@@ -1,4 +1,5 @@
 #!/usr/local/bin/python3
+import datetime
 import json
 import re
 import sys
@@ -526,6 +527,19 @@ print("""
 by Phil Barker (Author), Sue Laflin-Barker (Author)</a><br/>
 <a href="https://github.com/leberechtreinhold/dba3_tts">DBA 3.0 Table Top Simulator</a><br/>
 </p>
+""")
+
+sys.stdout.write("<p>Web site version:<br/>")
+sys.stdout.write( datetime.date.today().isoformat() )
+sys.stdout.write("<br/>")
+sys.stdout.write('''
+<a href="https://github.com/marcpawl/dba3_battle_cheatsheet">
+https://github.com/marcpawl/dba3_battle_cheatsheet
+</a>
+''')
+
+sys.stdout.write("</p>")
+print("""
 </body>
 </html>
 """)
