@@ -486,8 +486,10 @@ function blue_selected() {
 """)
 print("""
 </script>
+<title> DBA 3.0 Battle Cheat Sheet</title>
 </head>
 <body>
+<h1>DBA 3.0 Battle Cheat Sheet</h1>
 <form>
 """)
 
